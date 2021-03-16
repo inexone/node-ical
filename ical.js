@@ -326,7 +326,7 @@ const attendeeParameter = function (name) {
     const valueIndex = stack.search(/:mailto:/i);
     // Value after the ":"
     const value = stack.slice(valueIndex + 1);
-    const parameters = stack.slice("ATTENDEE;".length, valueIndex).split(";");
+    const parameters = stack.slice('ATTENDEE;'.length, valueIndex).split(';');
     return storeParameter(name)(value, parameters, curr);
   };
 };
