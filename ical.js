@@ -318,6 +318,19 @@ const freebusyParameter = function (name) {
   };
 };
 
+const attendeeParameter = function (name) {
+  return function (_value, _parameters, curr, _ctx, stack) {
+    // Because of wrong parsing of value, reconstructing the value and parameters
+    // The attendee parameters may contain ":" earlier on
+    // stack has the complete line, starting with `ATTENDEE`
+    const valueIndex = stack.search(/:mailto:/i);
+    // Value after the ":"
+    const value = stack.slice(valueIndex + 1);
+    const parameters = stack.slice("ATTENDEE;".length, valueIndex).split(";");
+    return storeParameter(name)(value, parameters, curr);
+  };
+};
+
 module.exports = {
   objectHandlers: {
     BEGIN(component, parameters, curr, stack) {
@@ -495,6 +508,7 @@ module.exports = {
       return typeParameter('datetype')(value, parameters, curr);
     },
     DTEND: dateParameter('end'),
+    ATTENDEE: attendeeParameter('attendee'),
     EXDATE: exdateParameter('exdate'),
     ' CLASS': storeParameter('class'), // Should there be a space in this property?
     TRANSP: storeParameter('transparency'),
